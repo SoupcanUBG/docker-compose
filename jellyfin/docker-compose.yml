@@ -1,0 +1,149 @@
+---
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_KEY}
+      - SERVER_COUNTRIES=Netherlands
+      - VPN_PORT_FORWARDING=on
+      - VPN_PORT_FORWARDING_PROVIDER=protonvpn
+    ports:
+      - "8080:8080" # web ui qbittorrent
+      - "6881:6881" # torrenting
+      - "6881:6881/udp" # torrenting udp
+      ####################
+      ## Other Services ##
+      ####################
+      - "8989:8989" # sonarr
+      - "7878:7878" # radarr
+      - "9696:9696" # prowlarr
+      - "8191:8191" # flaresolverr
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+    environment:
+      - PUID=13001
+      - PGID=13000
+      - UMASK=002
+      - TZ=${TIMEZONE}
+    volumes:
+      - /home/${USER}/media/config/sonarr-config:/config
+      - /home/${USER}/media/data:/data
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    restart: unless-stopped
+    network_mode: "service:gluetun"
+    environment:
+      - PUID=13002
+      - PGID=13000
+      - UMASK=002
+      - TZ=${TIMEZONE}
+    volumes:
+      - /home/${USER}/media/config/radarr-config:/config
+      - /home/${USER}/media/data:/data
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - PUID=13012
+      - PGID=13000
+      - UMASK=002
+      - TZ=${TIMEZONE}
+    volumes:
+      - /home/${USER}/media/config/jellyseerr-config:/app/config
+    ports:
+      - "5055:5055"
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:develop
+    container_name: prowlarr
+    restart: unless-stopped
+    network_mode: "service:gluetun"
+    environment:
+      - PUID=13006
+      - PGID=13000
+      - UMASK=002
+      - TZ=${TIMEZONE}
+    volumes:
+      - /home/${USER}/media/config/prowlarr-config:/config
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    restart: unless-stopped
+    network_mode: "service:gluetun"
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=${TIMEZONE}
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=13000
+      - UMASK=002
+      - TZ=${TIMEZONE}
+    volumes:
+      - /home/${USER}/media/config/jellyfin-config:/config
+      - /home/${USER}/media/data/media:/data
+    ports:
+      - "8096:8096"
+      - "7359:7359/udp"
+      - "7359:7359"
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+    network_mode: "service:gluetun"
+    environment:
+     - PUID=13007
+     - PGID=13000
+     - UMASK=002
+     - TZ=${TIMEZONE}
+     - WEBUI_PORT=8080
+    volumes:
+     - /home/${USER}/media/config/qbittorrent-config:/config
+     - /home/${USER}/media/data:/data
+  newt:
+    image: fosrl/newt
+    container_name: newt
+    restart: unless-stopped
+    environment:
+      - PANGOLIN_ENDPOINT=https://app.pangolin.net
+      - NEWT_ID=${NEWT_ID}
+      - NEWT_SECRET=${NEWT_KEY}
+  wizarr:
+    container_name: wizarr
+    image: ghcr.io/wizarrrr/wizarr
+    restart: unless-stopped
+    ports:
+      - 5690:5690
+    volumes:
+      - /home/${USER}/media/config/wizarr-config:/data
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - DISABLE_BUILTIN_AUTH=false 
+      - TZ=${TIMEZONE} 
+  watchtower:
+    image: nickfedor/watchtower:latest
+    restart: unless-stopped
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
