@@ -1,3 +1,6 @@
+
+
+
 # Docker Compose Setup
 
 This repository contains my Docker Compose setup.
@@ -14,6 +17,12 @@ To make running the stack easier, add the following alias to your `.bashrc`:
 
 ```bash
 alias compose="docker compose --env-file /home/user/docker/config.env up -d"
+```
+
+## Thanks to
+
+
+(https://github.com/nicholas-fedor/watchtower/)[Watchtower fork] - Thanks for taking the role of maintainer and continuing development on Watchtower after the original got archived
 
 
 
