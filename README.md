@@ -22,7 +22,7 @@ alias compose="docker compose --env-file /home/user/docker/config.env up -d"
 ## Thanks to
 
 
-(https://github.com/nicholas-fedor/watchtower/)[Watchtower fork] - Thanks for taking the role of maintainer and continuing development on Watchtower after the original got archived
+[Watchtower Fork](https://github.com/nicholas-fedor/watchtower/)- Thanks for taking the role of maintainer and continuing development on Watchtower after the original got archived
 
 
 
