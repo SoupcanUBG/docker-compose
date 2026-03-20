@@ -4,7 +4,7 @@ This repository contains my Docker Compose setup.
 
 ## Configuration
 
-Everything that needs to be configured is in `config.env` If there is any program you do not want just take it out of the right docker-compose.yml and the variables for it in config.env keep in mind that jellyseer depends on Radarr or Sonarr otherwise it is basically useless
+Everything that needs to be configured is in `config.env` If there is any program you do not want just take it out of the right docker-compose.yml and the variables for it in config.env keep in mind that jellyseerr depends on Radarr or Sonarr otherwise Jellyseerr it is basically useless
 
 ## Usage
 
