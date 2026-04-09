@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     container_name: playit.gg
     environment:
-      - SECRET_KEY=${ptg}
+      - SECRET_KEY=${PTG}
   school:
     image: itzg/minecraft-server:latest # Image of the minecraft server
     container_name: school # Name of the container
