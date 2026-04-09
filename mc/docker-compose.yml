@@ -1,1 +1,48 @@
-y
+---
+services:
+  playit:
+    image: ghcr.io/playit-cloud/playit-agent:0.17
+    network_mode: host
+    restart: unless-stopped
+    container_name: playit.gg
+    environment:
+      - SECRET_KEY=${ptg}
+  school:
+    image: itzg/minecraft-server:latest # Image of the minecraft server
+    container_name: school # Name of the container
+    pull_policy: daily # Try to update the container everyday
+    restart: unless-stopped # Basically means always on
+    tty: true
+    stdin_open: true
+    ports:
+      - "19132:19132/udp"
+      - "25565:25565"
+      - "24454:24454/udp"
+    environment:
+      EULA: "TRUE" # Agree to the EULA - This is needed to allow the server to run
+      TYPE: "PAPER" # Type of Minecraft server. Paper is designed to greatly improve performance compared to the default Minecraft server
+      MEMORY: "6G" # Amount of memory allocated to the Minecraft server.
+      MOTD: "§l§cLifesteal§r Server" # Description of the server.
+      OPS: "${ADMIN}" # Admin for the server.
+      SEED: "${SEED}" # Seed (Terrain) of the server.
+      VERSION: "1.21.11" # Minecraft version of the Minecraft server
+      ICON: "/logo.png" # Link to image for the logo of the server.
+      OVERRIDE_ICON: "true" # Override default logo for the server.
+      ONLINE_MODE: "false" # Allow support for cracked clients.
+      MODRINTH_PROJECTS: |
+        paper:wKkoqHrH:beta # GeyserMC - A bridge/proxy allowing you to connect to Java servers with Bedrock.
+        paper:9eGKb6K1:release # SimpleVoiceChat - A working voice chat in Minecraft!
+        paper:l8Uv7FzS:release # Lifestealz - LifeStealZ - The Ultimate LifeSteal SMP Plugin!
+        paper:TsLS8Py5:release # SkinsRestorer - 🎨 Ability to restore/change skins on servers!
+        paper:P1OZGk5p:release # ViaVersion - Allow newer Java Edition clients to connect to older servers.
+        paper:fALzjamp:release # Chunky - Pre-generates chunks quickly and efficiently.
+        paper:NpvuJQoq:release # ViaBackwards - Allow older Java Edition clients to connect to newer servers.
+        paper:3IEZ9vol:release # AuthMeReloaded (Fork) - Security for cracked servers.
+        paper:p8Dsa5jy:release # Themis Anti Cheat - A free Anti Cheat with Bedrock support
+        paper:xfelWIYh:release # Discord-Linker
+        paper:vizzory:release  # Dashboard
+      PLUGINS: |
+        https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot # Floodgate
+    volumes:
+      - "/home/${USER}/Data/mc/school smp/server:/data" # All the server data
+      - "./unscripted.png:/logo.png" # Minecraft server logo
