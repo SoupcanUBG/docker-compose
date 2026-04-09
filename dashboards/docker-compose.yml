@@ -1,0 +1,28 @@
+services:
+  dash:
+    image: mauricenino/dashdot:latest
+    restart: unless-stopped
+    container_name: dashdot
+    privileged: true
+    ports:
+      - 9000:3001
+    volumes:
+      - /:/mnt/host:ro
+  dockhand:
+    image: fnsys/dockhand:latest
+    container_name: dockhand
+    restart: unless-stopped
+    ports:
+      - 9001:3000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/${USER}/Data/dashboards/dockhand:/app/data
+  homepage:
+    image: nginx:latest
+    container_name: dashboard
+    ports:
+      - 82:80
+    volumes:
+      - /home/${USER}/Data/dashboards/homepage:/usr/share/nginx/html:ro
+      - /home/${USER}/media/config/nginx-config/:/etc/nginx/conf.d/
+    restart: unless-stopped
